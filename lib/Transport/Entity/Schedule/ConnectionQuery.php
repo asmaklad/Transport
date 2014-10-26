@@ -8,6 +8,10 @@ use Transport\Entity\Location\Location;
 
 class ConnectionQuery extends Query
 {
+    const ACCESSIBILITY_INDEPENDENT_BOARDING = 'independent_boarding';
+
+    const ACCESSIBILITY_ASSISTED_BOARDING = 'assisted_boarding';
+
     public $srcLocation;
 
     public $dstLocation;
@@ -39,6 +43,8 @@ class ConnectionQuery extends Query
     public $couchette = false;
 
     public $bike = false;
+
+    public $accessibility = null;
 
     public function __construct(Location $srcLocation, Location $dstLocation, array $viaLocations = array(), $date = null, $time = null)
     {
@@ -86,6 +92,15 @@ class ConnectionQuery extends Query
 
         if ($this->bike) {
             $prod['bike'] = 1;    
+        }
+$con['HandicapProfile'] = '1';
+        if ($this->accessibility !== null) {
+            if ($this->accessibility === self::ACCESSIBILITY_INDEPENDENT_BOARDING) {
+                $con['HandicapProfile'] = '1';
+            }
+            if ($this->accessibility === self::ACCESSIBILITY_ASSISTED_BOARDING) {
+                $con['HandicapProfile'] = '2';
+            }
         }
 
         $dest = $con->addChild('Dest');
